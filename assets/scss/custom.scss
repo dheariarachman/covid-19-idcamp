@@ -1,0 +1,9 @@
+// custom.scss
+$primary:       #204051 ;
+$secondary:     #3b6978 ;
+$light:         #cae8d5 ;
+$dark:          #84a9ac ;
+
+// import bootstrap and bootstrap-vue
+@import 'bootstrap/scss/bootstrap.scss';
+@import 'bootstrap-vue/src/index.scss';
