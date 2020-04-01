@@ -23,15 +23,13 @@ export default {
   /*
    ** Global CSS
    */
-  css: [
-    "~/assets/scss/custom.scss",
-    "~/assets/css/main.css"
-  ],
+  css: ["~/assets/scss/custom.scss", "~/assets/css/main.css"],
   /*
    ** Plugins to load before mounting the App
    */
   plugins: [
     "~/plugins/firebase.js",
+    { src: "~/plugins/localStorage.js", ssr: false }
   ],
   /*
    ** Nuxt.js dev-modules
@@ -45,7 +43,50 @@ export default {
     "@nuxtjs/axios",
     "@nuxtjs/pwa",
     "bootstrap-vue/nuxt",
+    "@nuxtjs/auth",
+    "@nuxtjs/firebase"
   ],
+  firebase: {
+    config: {
+      production: {
+        apiKey: "AIzaSyC_VkdWgzHEpur_4m8OvRSR_HA8EJkya0E",
+        authDomain: "covid-19-idcamp.firebaseapp.com",
+        databaseURL: "https://covid-19-idcamp.firebaseio.com",
+        projectId: "covid-19-idcamp",
+        storageBucket: "covid-19-idcamp.appspot.com",
+        messagingSenderId: "158205077953",
+        appId: "1:158205077953:web:ce03d56fd8e487766fe740",
+        measurementId: "G-C4RSNDCMKK"
+      },
+      development: {
+        apiKey: "AIzaSyC_VkdWgzHEpur_4m8OvRSR_HA8EJkya0E",
+        authDomain: "covid-19-idcamp.firebaseapp.com",
+        databaseURL: "https://covid-19-idcamp.firebaseio.com",
+        projectId: "covid-19-idcamp",
+        storageBucket: "covid-19-idcamp.appspot.com",
+        messagingSenderId: "158205077953",
+        appId: "1:158205077953:web:ce03d56fd8e487766fe740",
+        measurementId: "G-C4RSNDCMKK"
+      }
+    },
+    services: {
+      auth: {
+        persistence: 'local',
+        initialize: {
+          onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
+          // onAuthStateChangedAction: 'onAuthStateChangedAction'
+        },
+        ssr: {
+          ignorePaths: [
+            '/auth/'
+          ]
+        }
+      }
+    },
+    messaging: {
+      createServiceWorker: true
+    }
+  },
   bootstrapVue: {
     bootstrapCSS: false,
     bootstrapVueCSS: false,
@@ -58,6 +99,9 @@ export default {
         use: ["style-loader", "css-loader", "sass-loader"]
       }
     ]
+  },
+  router: {
+    middleware: ['login']
   },
   /*
    ** Axios module configuration

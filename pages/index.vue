@@ -1,33 +1,29 @@
 <template>
   <div class="container">
-    <b-card>
-      Hello
-    </b-card>
+    <b-list-group>
+
+    </b-list-group>
   </div>
 </template>
 
 <script>
-import firebase from 'firebase';
+import firebase from "firebase";
+import { mapMutations } from "vuex";
 
 export default {
-  layout: 'dashboard',
+  layout: "dashboard",
   asyncData() {
     return {
       authenticatedUser: null
-    }
+    };
   },
-  data() {
-
-  },
+  data() {},
   created() {
-    firebase.auth().onAuthStateChanged(
-      user => {
-        this.authenticatedUser = user
-        console.log(user);
-      }
-    )
-  }
-}
+    firebase.auth().onAuthStateChanged(user => {
+      this.authenticatedUser = user;
+    });
+  },
+};
 </script>
 
 <style>
@@ -38,5 +34,9 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+.done {
+  text-decoration: line-through;
 }
 </style>

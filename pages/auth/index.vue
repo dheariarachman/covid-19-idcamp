@@ -1,7 +1,15 @@
 <template>
   <div>
     <b-card-body title="Login Form" class="text-center">
-      <b-alert :show="dismissCountDown" :variant="variant" dismissible fade>{{ alertMessage }}</b-alert>
+      <b-alert
+        :show="showMessage"
+        dismissible
+        fade
+        class="text-left"
+        @dismissed="closeAlert"
+        :variant="variant"
+      >{{ message }}</b-alert>
+
       <b-form @submit="onSubmit">
         <b-form-group id="input-group-1" label-for="input-1">
           <b-form-input
@@ -23,7 +31,7 @@
           ></b-input>
         </b-form-group>
         <b-overlay
-          :show="isCreated"
+          :show="loadingStatus"
           spinner-variant="primary"
           spinner-type="grow"
           spinner-small
@@ -45,15 +53,11 @@
 
 <script>
 import firebase from "firebase";
+
 export default {
   layout: "login",
   data() {
-    return {
-      isCreated: false,
-      dismissCountDown: 0,
-      variant: null,
-      alertMessage: null,
-    }
+    return {};
   },
   asyncData() {
     return {
@@ -66,28 +70,24 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      this.isCreated = true;
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.form.email, this.form.password)
-        .then(credential => {
-          if (!credential.user.emailVerified) {
-            this.showAlert("danger", "Email not verified");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.showAlert("danger", err.message);
-        });
+      this.$store.dispatch("fireauth/login", this.form);
     },
-    showAlert(variant, message) {
-      this.dismissCountDown = 5;
-      this.variant = variant;
-      this.alertMessage = message;
-      setTimeout(() => {
-        this.dismissCountDown = 0;
-      }, 2000);
-      this.isCreated = false;
+    closeAlert() {
+      this.$store.dispatch("fireauth/closeAlert");
+    }
+  },
+  computed: {
+    loadingStatus() {
+      return this.$store.state.auth.isLoading;
+    },
+    variant() {
+      return this.$store.state.auth.variant;
+    },
+    message() {
+      return this.$store.state.auth.message;
+    },
+    showMessage() {
+      return this.$store.state.auth.showMessageAlert;
     }
   }
 };

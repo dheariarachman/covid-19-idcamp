@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-card-body title="Signup Form" class="text-center">
-      <b-alert :show="dismissCountDown" :variant="variant" dismissible fade>{{ alertMessage }}</b-alert>
+      <b-alert :show="dismissCountDown" :variant="variant" dismissible fade>{{ message }}</b-alert>
       <b-form @submit="onSubmit">
         <b-form-group id="input-group-1" label-for="input-1">
           <b-form-input
@@ -34,7 +34,7 @@
         </b-form-group>
 
         <b-overlay
-          :show="isCreated"
+          :show="loadingOverlay"
           spinner-variant="primary"
           spinner-type="grow"
           spinner-small
@@ -58,14 +58,20 @@
 import firebase from "firebase";
 export default {
   layout: "login",
-  components: {
+  computed: {
+    variant() {
+      return this.$store.state.auth.variant
+    },
+    message() {
+      return this.$store.state.auth.message
+    },
+    loadingOverlay() {
+      return this.$store.state.auth.isLoading
+    }
   },
   data() {
     return {
       dismissCountDown: 0,
-      variant: null,
-      alertMessage: null,
-      isCreated: false
     };
   },
   asyncData() {
@@ -75,48 +81,16 @@ export default {
         name: "",
         password: ""
       },
-      user: null
     };
   },
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      this.isCreated = true;
       if (this.form.password == "") {
-        this.showAlert("danger", "Password is empty");
-        this.isCreated = false;
       } else {
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(this.form.email, this.form.password)
-          .then(credential => {
-            firebase
-              .auth()
-              .currentUser.sendEmailVerification()
-              .then(data => {
-                firebase
-                  .auth()
-                  .currentUser.updateProfile({ displayName: this.form.name });
-                this.showAlert("success", "Check email " + this.form.email);
-              })
-              .catch(err => {
-                this.showAlert("danger", err.message);
-              });
-          })
-          .catch(error => {
-            this.showAlert("danger", error.message);
-          });
+        this.$store.dispatch('auth/signup', this.form)
       }
     },
-    showAlert(variant, message) {
-      this.dismissCountDown = 5;
-      this.variant = variant;
-      this.alertMessage = message;
-      setTimeout(() => {
-        this.dismissCountDown = 0;
-      }, 2000);
-      this.isCreated = false;
-    }
   }
 };
 </script>
